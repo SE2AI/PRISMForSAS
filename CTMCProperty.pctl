@@ -1,0 +1,22 @@
+const int T;
+
+R=? [ F s=22 ]
+
+R{"energy"}=? [ F s=22 ]
+
+R{"energy"}=? [ C<=T ]
+
+P>=0.6 [ F<=50 s=4 ]
+
+P=? [ F<=50 s=4 ]
+
+R{"energy"}=? [ F s=22 ]/T
+
+R{"energy"}=? [ C<=T ]/T
+
+P=? [ F<=100 s=22 ]
+
+P=? [ s=14 U<=T s=22 ]
+
+filter(max, P=? [ F<=T s=22 ], s=14)
+

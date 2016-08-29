@@ -1,0 +1,170 @@
+ctmc
+//configuration
+const int CT; // 1 low band 2 high band
+const int RG; // 1 SMS 2 internet
+const int LC; // 1 GPS 2 GSM
+const int PT; // 1 online 2 offline
+const int FM; // 1 Media 2 Text
+const int SE; // 1 Voice 2 Text
+const double T0;
+const double B;
+
+//time cost
+
+//const double tau=1/100;
+
+const double t0=0.5;
+const double t1=0.8;
+const double t2=1;
+const double t45=0.5;
+const double t48=3;
+const double t56=0.8;
+const double t58=5;
+const double t67=1.2;
+const double t68=8;
+const double t8=0.1;
+const double t9=1;
+const double t10=0.5;
+const double t11=0.2;
+const double t12=15;
+const double t131=1.5;
+const double t132=10;
+const double t15=0.5;
+const double t16=50;
+const double t17=0.5;
+const double t18=50;
+const double t19=0.8;
+const double t21=0.5;
+
+const double r1=4;
+const double r2=2;
+
+const double l11=5;
+const double l12=10;
+const double l21=3;
+const double l22=8;
+
+const double f1=7;
+const double f2=3;
+
+const double e1=1;
+const double e2=0.5;
+
+
+module  context
+	c:[0..CT] init 0;
+	[] c=0 -> (c'=CT);
+	[ctfinish] c=CT -> true;
+endmodule
+
+module  regist
+	r:[0..RG] init 0;
+	[ctfinish] r=0 ->  (r'=RG);
+	[rgfinish] r=RG ->  true;
+endmodule
+
+module  locate
+
+	l:[0..LC] init 0;
+	[rgfinish] l=0 ->  (l'=LC);
+	[lcfinish] l=LC ->  true;
+endmodule
+
+module  path
+	p:[0..PT] init 0;
+	[lcfinish] p=0 ->  (p'=PT);
+	[ptfinish1] p=1 ->  true;
+	[ptfinish2] p=2 ->  true;
+endmodule
+
+module  format
+
+	f:[0..FM] init 0;
+	[ptfinish1] f=0 ->  (f'=FM);
+	[mb1] f=FM ->  true;
+endmodule
+
+module  search
+
+	e:[0..SE] init 0;
+	[ptfinish2] e=0 ->  (e'=SE);
+	[mb2] e=SE ->  true;
+endmodule
+
+module mobis
+	// local state
+	s : [0..22] init 0;
+	
+	[mb1] s=0 -> 1/t0 : (s'=1);
+	[mb2] s=0 -> 1/t0 : (s'=1);
+	[an] s=1 -> 1/t1 : (s'=2);
+	[dr] s=2 -> 1/t2 : (s'=3);
+	[mb] s=4 -> 1/t45 : (s'=5) + 1/t48 : (s'=8);
+	[an] s=5 -> 1/t56 : (s'=6) + 1/t58 : (s'=8);
+	[dl] s=6 -> 1/t67 : (s'=7) + 1/t68 : (s'=8);
+	[ml]s=8 -> 1/t8 : (s'=9);
+	[al]s=9 -> 1/t9 : (s'=10);
+	[drl]s=10 -> 1/t10 : (s'=11);
+	[rl] s=11 -> 1/t11 : (s'=4);
+	[dp] s=12 -> 1/t12 : (s'=13);
+	[rdp] s=13 -> 1/t131 : (s'=12);
+	[sp] s=13 & p=1 -> 1/t131 : (s'=14) + 1/t132 : (s'=12);
+	[sp] s=13 & p=2 -> 1/t131 : (s'=20) + 1/t132 : (s'=12);
+	[st] s=15 -> 1/t15 : (s'=16);
+	[sd] s=16 -> 1/(t16/T0) : (s'=17);
+	[sb] s=17 -> 1/t17 : (s'=18);
+	[load] s=18 -> 1/(t18/B*5) : (s'=19);
+	[persist] s=19 -> 1/t19 : (s'=22);
+	[filt] s=21 -> 1/t21 : (s'=22);
+	// variable states 
+	[SMS] s=3 & r=1->1/r1 : (s'=4);
+	[INT] s=3 & r=2->1/r2 : (s'=4);
+
+	[GPS] s=7 & l=1->1/l11 : (s'=12) + 1/l12 : (s'=8);
+	[GSM] s=7 & l=2->1/l21 : (s'=12) + 1/l22 : (s'=8);
+
+	[MED] s=14 & f=1->1/f1 : (s'=15);
+	[TXT] s=14 & f=2->1/f2 : (s'=15);
+
+	[VOI] s=20 & e=1->1/e1 : (s'=21);
+	[TXT] s=20 & e=2->1/e2 : (s'=21);
+	
+endmodule
+
+rewards "energy"
+	[mb1] true : 3;
+	[mb2] true : 3;
+	[an] true : 5;
+	[dr] true : 5;
+	[mb] true : 3;
+	[an] true : 5;
+	[dl] true : 5.5;
+	[ml]true : 1;
+	[al]true : 6;
+	[drl]true : 2;
+	[rl] true : 3;
+	[dp] true : 8;
+	[rdp] true : 2;
+	[sp] true : 2;
+	[sp] true : 2;
+	[st] true : 3;
+	[sd] true : 20/T0;
+	[sb] true : 3;
+	[load] true : 20*B;
+	[persist] true : 5;
+	[filt] true : 4;
+
+	[SMS] true : 4;
+	[INT] true : 6;
+
+	[GPS] true : 8;
+	[GSM] true : 5;
+
+	[MED] true : 15;
+	[TXT] true : 8;
+
+	[VOI] true : 5;
+	[TXT] true : 2;
+
+
+endrewards

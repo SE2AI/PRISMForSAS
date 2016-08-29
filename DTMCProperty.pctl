@@ -1,0 +1,24 @@
+const int T;
+
+P=? [ F[T,T] s=26 ]
+
+P=? [ F[T,T] s=13 ]
+
+P=? [ F[T,T] s=24 ]
+
+P=? [ F s=14 {s=0} ]
+
+filter(max, P=? [ F[T,T] s=26 ], s=14)
+
+P=? [ F[T,T] s=14 ]
+
+P=? [ F[T,T] s=4 ]
+
+P=? [ s=5 U<=T s=26 ]
+
+R{"utility"}=? [ C<=T ]
+
+R{"utility"}=? [ F s=1 ]
+
+P=? [ F[T,T] s=26&a1=26&a2=26&a3=26&a4=26]
+
