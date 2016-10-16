@@ -1,13 +1,13 @@
 dtmc
 //configuration
-const int CT=2; // 1 low band 2 high band
-const int Login=2; // 1 SMS 2 internet
-const int Locate=2; // 1 GPS 2 GSM
-const int PT=1; // 1 online 2 offline
-const int Form=2; // 1 Media 2 Text
-const int Search=2;// 1 Voice 2 Text
-const double T0=5; // value of time
-const double B=5; // value of buffer
+const int CT;// 1 low band 2 high band
+const int Login; // 1 SMS 2 internet
+const int Locate; // 1 GPS 2 GSM
+const int PT; // 1 online 2 offline
+const int Form; // 1 Media 2 Text
+const int Search;// 1 Voice 2 Text
+const double T0; // value of time
+const double B; // value of buffer
 //failure probabilities of invariable transitions
 
 const double t0=0.0005;
@@ -27,7 +27,7 @@ const double t12=0.0003;
 const double t13=0.0003;
 
 const double t16=0.0005;
-const double t18=0.002;
+const double t18=0.05;
 const double t19=1;
 const double t20=0.0005;
 const double t22=0.0002;
@@ -137,18 +137,18 @@ module mobis
 	[TXT] s=17 & f=2 & c=1 -> 1-f21 : (s'=18) + f21 : (s'=25);
 	[TXT] s=17 & f=2 & c=2 -> 1-f22 : (s'=18) + f22 : (s'=25);
 
-	[SearchND] s=18 -> 1-t18*T0 : (s'=19) + t18*T0 : (s'=25);
+	[SearchND] s=18 -> 1-t18/T0 : (s'=19) + t18/T0 : (s'=25);
 	[LOAD] s=19 -> 1-t19/B : (s'=20) + t19/B : (s'=25);
 	
 	[VOI] s=21 & e=1 -> 1-e1 : (s'=22) + e1 : (s'=25);
 	[TXT] s=21 & e=2 -> 1-e2 : (s'=22) + e2 : (s'=25);
 
 endmodule
-module a1 = mobis [s=a1] endmodule
-module a2 = mobis [s=a2] endmodule
-module a3 = mobis [s=a3] endmodule
-module a4 = mobis [s=a4] endmodule
-module a5 = mobis [s=a5] endmodule
+//module a1 = mobis [s=a1] endmodule
+//module a2 = mobis [s=a2] endmodule
+//module a3 = mobis [s=a3] endmodule
+//module a4 = mobis [s=a4] endmodule
+//module a5 = mobis [s=a5] endmodule
 
 
 rewards "utility"
